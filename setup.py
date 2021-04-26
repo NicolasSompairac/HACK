@@ -22,8 +22,9 @@ setuptools.setup(
         "matplotlib == 3.4.1",
         "jupyterthemes == 0.20.0",
         "ipywidgets == 7.4.2",
-       " requests == 2.22.0",
+        "requests == 2.22.0",
         "json2html == 1.3.0",
+        "mygene==3.2.2"
         ],
     classifiers=[
         "Programming Language :: Python :: 3",
