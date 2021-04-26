@@ -2,84 +2,72 @@ import requests
 import json
 import pandas as pd
 from json2html import *
+import mygene
 
 
-def Transform_gene_list_to_dict(gene_list):
+def Call_ID_conversion_API(genes_list, input_type, output_type, remove_duplicates=True):
     """
-    Transform a list of gene ids into a dictionary to serve as API input.
-    
-    Inputs
-    ------
-    gene_list: list of strings
-        List of strings containing genes ids.
-    
-    Outputs
-    -------
-    genes_dict: dict
-        Dictionary with key="Symbols" and value=list of genes.
-    
-    """
-    
-    genes_dict = {}
-    genes_dict["Symbols"] = []
-    for gene in gene_list:
-        genes_dict["Symbols"].append(gene)
-    return genes_dict
-
-
-def Call_ID_conversion_API(gene_dict):
-    """
-    Call TOPPGENE API to convert gene ids: https://toppgene.cchmc.org/API/lookup.
+    Call mygene "quarymany()" function to convert gene ids: https://docs.mygene.info/projects/mygene-py/en/latest/#mygene.MyGeneInfo.querymany
     Genes as input can use the following ids: HGNC, ENSEMBL, ENTREZ, UNIPROT, REFSEQ.
     Output ids will be: OfficialSymbol, Entrez, Submitted.
     
     Inputs
     ------
-    gene_dict: dict
-        Dictionary with key="Symbols" and value=list of genes.
+    genes_list: list of strings
+        List containing gene IDs.
+
+    input_type: string
+        Type of input gene IDs.
+        For available types, see: https://docs.mygene.info/en/latest/doc/query_service.html#available_fields
+
+    output_type: string
+        Type of output gene IDs.
+        For available types, see: https://docs.mygene.info/en/latest/doc/data.html#available-fields
+
+    remove_duplicates: Boolean
+        If True (default), only first entry IDs (highest matching scores) will be kept.
     
     Outputs
     -------
-    response: requests.models.Response
-        Response from "https://toppgene.cchmc.org/API/lookup" API call.
+    response: pandas Dataframe
+        Dataframe containing query IDs as index.
     
     """
     
-    url = "https://toppgene.cchmc.org/API/lookup"
-    headers = {'Content-Type': 'text/json'}
-    response = requests.post(url,headers=headers,data=json.dumps(gene_dict))
-    if response.status_code == 200:
-        print("ID conversion success!")
+    #Initiate mygene
+    mg = mygene.MyGeneInfo()
+    #Perform Conversion
+    conversion_df = mg.querymany(genes_list, scopes=input_type, fields=output_type, verbose=False, as_dataframe=True)
+    print("ID conversion success!")
+
+    if remove_duplicates:
+            return conversion_df[~conversion_df.index.duplicated(keep='first')]
     else:
-        print("Something went wrong during conversion... Status code:", response.status_code)
-    return response
+        return conversion_df
 
-
-def Extract_Entrez_id(api_response):
+def Extract_Entrez_id(api_response_df):
     """
-    Extract Entrez IDs from the TOPPGENE lookup API call and store it into
-    a dictionary to use as input for TOPPFUN enrichment API.
+    Extract Entrez IDs from the mygene conversion API call and store it into
+    a list to use as input for TOPPFUN enrichment API.
     
     Inputs
     ------
-    api_response: requests.models.Response
-        Response from "https://toppgene.cchmc.org/API/lookup" API call.
+    api_response_df: pandas Dataframe
+        Dataframe from mygene "querymany()" function containing Entrez IDs.
     
     Outputs
     -------
-    entrez_dict: dict
-        Dictionary with key="Genes" and value=list of genes in Entrez IDs.
+    entrez_list: list
+        List of genes in Entrez IDs.
     
     """
     
-    entrez_dict = {}
-    entrez_dict["Genes"] = []
-    for item in api_response.json()["Genes"]:
-        entrez_dict["Genes"].append(item["Entrez"])
-    return entrez_dict
+    entrez_list = list(map(int, list(api_response_df["entrezgene"])))
+    
+    return entrez_list
 
 
-def Call_enrichment_API(entrez_dict, type_list, Pval=0.05, mingene=1, maxgene=500, maxres=10, correct="FDR"):
+def Call_enrichment_API(entrez_list, type_list, Pval=0.05, mingene=1, maxgene=500, maxres=10, correct="FDR"):
     """
     Call TOPPGENE API to detect functional enrichments of a gene list: https://toppgene.cchmc.org/API/enrich.
     Enrichment can be performed on the following features: GeneOntologyMolecularFunction
@@ -104,8 +92,8 @@ def Call_enrichment_API(entrez_dict, type_list, Pval=0.05, mingene=1, maxgene=50
     
     Inputs
     ------
-    entrez_dict: dict
-        Dictionary with key="Genes" and value=list of genes in Entrez IDs.
+    entrez_list: list
+        List of genes in Entrez IDs.
     
     type_list: list of strings
         List of features to perform enrichment tests.
@@ -144,7 +132,7 @@ def Call_enrichment_API(entrez_dict, type_list, Pval=0.05, mingene=1, maxgene=50
                                         "MaxResults":maxres,
                                         "Correction":correct})
     data_all = {}
-    data_all["Genes"] = entrez_dict["Genes"]
+    data_all["Genes"] = entrez_list
     data_all["Categories"] = parameters["Categories"]
     response = requests.post(url,headers=headers,data=json.dumps(data_all))
     if response.status_code == 200:
@@ -222,3 +210,53 @@ def Export_enrichment_results(cleaned_json, filetype, filename):
         "Wrong type input. Please use 'html' or 'xlsx'."
     
     return
+
+
+
+# Example list of genes related to immune receptor activity.
+Gene_query_list = ["HLA-DOB","HLA-DQA1","HLA-DRA","FCER1G","PIGR","CCR4","CCR6","CCR7","IL27RA","FPR3","CR1","KLRK1","CSF2RB","IL7R","CXCR5","IL22RA2","CXCR4","C3AR1","CCR10"]
+# Parameter for ID conversion
+Input_type = 'symbol'
+Output_type = 'entrezgene'
+# Convert gene ids to Entrez
+Conversion_API_response = Call_ID_conversion_API(Gene_query_list,Input_type,Output_type)
+# Extract Entrez ids from the conversion API response
+Entrez_ids_list = Extract_Entrez_id(Conversion_API_response)
+# Choose the list of features to perform enrichment against
+Enrichment_types = ["GeneOntologyMolecularFunction",
+                    "GeneOntologyBiologicalProcess",
+                    "GeneOntologyCellularComponent",
+                    "HumanPheno",
+                    "MousePheno",
+                    "Domain",
+                    "Pathway",
+                    "Pubmed",
+                    "Interaction",
+                    "Cytoband",
+                    "TFBS",
+                    "GeneFamily",
+                    "Coexpression",
+                    "CoexpressionAtlas",
+                    "GeneFamily",
+                    "Computational",
+                    "MicroRNA",
+                    "Drug",
+                    "Disease"]
+# Enrichment parameters
+Pval = 0.05
+Min_genes = 1
+Max_genes = 500
+Max_results = 5
+Correction = "FDR"
+# Call TOPPFUN enrichment API
+Enrichment_API_response = Call_enrichment_API(Entrez_ids_list,Enrichment_types,
+                                              Pval,Min_genes,Max_genes,Max_results,
+                                              Correction)
+# Clean the enrichment response JSON structure for pretier exports
+Enrichment_API_response_cleaned = Clean_enrichment_genes(Enrichment_API_response)
+# Export enrichment analysis into a file
+File_type = "html" # use html or xlsx
+File_name = "Enrichment_example"
+Export_enrichment_results(Enrichment_API_response_cleaned, File_type, File_name)
+File_type = "xlsx" # use html or xlsx
+Export_enrichment_results(Enrichment_API_response_cleaned, File_type, File_name)
