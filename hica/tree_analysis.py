@@ -90,7 +90,7 @@ def Get_SD_genes(component_str, SD_threshold, foldername, job):
 	
 	return gene_list
 
-def Create_plot_colors(graph, layout, threshold_sign, signature, edge_select, print_node_labels,
+def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_select, print_node_labels,
 						print_edge_labels, print_all_nodes, source_node, node_cmap, edge_cmap,
 						genes_test, SD, genes_prop, file_name, foldername, job, added_edges, start_nodes):
 	
@@ -272,8 +272,8 @@ def Create_plot_colors(graph, layout, threshold_sign, signature, edge_select, pr
 		# Dashed edges second
 		if edge_dashed_name:
 			edges_border = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name,
-								  width=edge_width*1.5, edge_color="k", style='solid',alpha=alpha_val)
-			edges_fig = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name, width=edge_width,
+								  width=edge_width*0.5, edge_color="k", style='solid',alpha=alpha_val)
+			edges_fig = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name, width=edge_width*0.5,
 								   edge_color=edge_dashed_colors, style='dashed',alpha=alpha_val,
 								   edge_cmap=plt.cm.get_cmap(edge_cmap), edge_vmin=0, edge_vmax=1)
 		if print_edge_labels:
@@ -292,8 +292,8 @@ def Create_plot_colors(graph, layout, threshold_sign, signature, edge_select, pr
 		# Dashed edges second
 		if edge_dashed_name:
 			edges_border = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name,
-								  width=edge_width*1.5, edge_color="w", style='solid',alpha=alpha_val)
-			edges_fig = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name, width=edge_width,
+								  width=edge_width*0.5, edge_color="w", style='solid',alpha=alpha_val)
+			edges_fig = nx.draw_networkx_edges(graph, pos, edgelist=edge_dashed_name, width=edge_width*0.5,
 								   edge_color=edge_dashed_colors_cor, style='dashed',alpha=alpha_val,
 								   edge_cmap=plt.cm.get_cmap(edge_cmap), edge_vmin=0, edge_vmax=1)
 		if print_edge_labels:
@@ -304,7 +304,7 @@ def Create_plot_colors(graph, layout, threshold_sign, signature, edge_select, pr
 	
 	
 	plt.ylabel('Decomposition Order',weight='bold')
-	plt.yticks(np.arange(0, 105, 5),labels=np.arange(0, 105, 5))
+	plt.yticks(np.arange(0, max_dim+5, 5),labels=np.arange(0, max_dim+5, 5))
 	plt.grid(axis='y', linestyle='--')
 	plt.grid(b=None,axis='x')
 	#plt.sci(edges_border)    
@@ -392,10 +392,10 @@ def Compute_average_segments(graph_full, graph_simple, score_type, threshold, da
 			sum_vect += orient_average_vect
 		# Average the list of scores
 		average_sum_vect = sum_vect/(len(segment))
-		"""
+		
 		if score_type == "rank":
 			average_sum_vect = np.rint(average_sum_vect)
-		"""
+		
 		seg_average_list.append(average_sum_vect)
 	# Get segment simplified names
 	segment_simple_names_list = []
