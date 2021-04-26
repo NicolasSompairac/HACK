@@ -6,6 +6,12 @@ The algorithm works in 3 steps:
 * Deconvolution over multiple dimensions using stabilised ICA (https://github.com/ncaptier/Stabilized_ICA)
 * Creation of a hierarchical graph
 
+## Installation
+
+```
+$ pip install git+https://github.com/NicolasSompairac/Hierarchical_ICA#egg=hica
+```
+
 ## Example
 
 A Jupyter notebook [Hierarchical ICA](Hierarchical_ICA.ipynb) can be found, describing the different steps needed to be performed as well as the required packages to run.
