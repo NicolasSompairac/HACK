@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires = [
         "scipy == 1.6.2",
-        "scanpy == 1.4.5.post2",
+        "scanpy >= 1.4.5.post2",
         "pandas == 1.2.4",
         "numpy == 1.20.2",
         "networkx == 2.4",
