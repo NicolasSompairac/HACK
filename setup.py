@@ -14,10 +14,10 @@ setuptools.setup(
     url="https://github.com/NicolasSompairac/Hierarchical_ICA",
     packages=setuptools.find_packages(),
     install_requires = [
-        "scipy == 1.6.2",
-        "scanpy == 1.4.5.post2",
+        "scipy == 1.6.3",
+        "scanpy >= 1.4.5.post2",
         "pandas == 1.2.4",
-        "numpy == 1.20.2",
+        "numpy == 1.20.3",
         "networkx == 2.4",
         "matplotlib == 3.4.1",
         "jupyterthemes == 0.20.0",
