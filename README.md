@@ -3,7 +3,7 @@ This repository offers a Hierarchical approach to Stabilised Independent Compone
 
 The algorithm works in 3 steps:
 * Pre-processing of given data
-* Deconvolution over multiple dimensions using stabilised ICA (https://github.com/ncaptier/Stabilized_ICA)
+* Deconvolution over multiple dimensions using stabilised ICA (https://github.com/ncaptier/stabilized-ica)
 * Creation of a hierarchical graph
 
 ## Installation
@@ -26,7 +26,7 @@ The data used in the example is coming from an RNA-Seq Breast Cancer dataset tak
 
 ## Usage
 
-The list of required packages and their version are listed in the Jupyter notebook. The required Stabilised ICA functions ["sica"](https://github.com/ncaptier/Stabilized_ICA/tree/master/sica) must be installed separately.
+The list of required packages and their version are listed in the Jupyter notebook. The required Stabilised ICA functions ["sica"](https://github.com/ncaptier/stabilized-ica/tree/master/sica) must be installed separately.
 
 For a direct use of the notebook, it is recommended to install the Stabilised ICA package directly via "pip".
-It is also possible to download the ["sica"](https://github.com/ncaptier/Stabilized_ICA/tree/master/sica) folder manually and put it in the same directory as the notebook.
+It is also possible to download the ["sica"](https://github.com/ncaptier/stabilized-ica/tree/master/sica) folder manually and put it in the same directory as the notebook.
