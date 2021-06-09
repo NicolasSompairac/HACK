@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hica",
-    version="0.0.1",
+    version="0.0.2",
     author="Nicolas Sompairac",
     author_email="nicolas.sompairac@curie.fr",
     description="Hierarchical ICA algorithm and applications to genomic data",
