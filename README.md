@@ -1,5 +1,5 @@
-# Hierarchical_ICA
-This repository offers a Hierarchical approach to Stabilised Independent Component Analysis for genomic data
+# Component Forest
+This repository offers a Multi-level decomposition approach to Stabilised Independent Component Analysis for genomic data
 
 The algorithm works in 3 steps:
 * Pre-processing of given data
@@ -9,7 +9,7 @@ The algorithm works in 3 steps:
 ## Installation
 
 ```
-$ pip install git+https://github.com/NicolasSompairac/Hierarchical_ICA#egg=hica
+$ pip install git+https://github.com/NicolasSompairac/Component_Forest#egg=hica
 ```
 
 ## Example
