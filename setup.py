@@ -11,7 +11,7 @@ setuptools.setup(
     description="Hierarchical ICA algorithm and applications to genomic data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/NicolasSompairac/Hierarchical_ICA",
+    url="https://github.com/NicolasSompairac/Component_Forest",
     packages=setuptools.find_packages(),
     install_requires = [
         "scipy == 1.6.3",
