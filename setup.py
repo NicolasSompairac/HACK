@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hica",
-    version="0.0.2",
+    version="0.0.3",
     author="Nicolas Sompairac",
     author_email="nicolas.sompairac@curie.fr",
-    description="Hierarchical ICA algorithm and applications to genomic data",
+    description="Component Forest algorithm and ICA applications to genomic data",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/NicolasSompairac/Component_Forest",
