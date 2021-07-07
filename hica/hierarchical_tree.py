@@ -458,10 +458,15 @@ def Recontruct_splits(DG_persist_simple, job, Comp_sign_dict, CC_dict_start, Cor
 					C2 = np.load(job+"_deconvolutions/"+job+"_S_matrix_C"+str(start_order)+".npy")
 					# Test correlation
 					test_cor = scipy.stats.pearsonr(C1[:,end_ic_num-1],C2[:,start_ic_num-1])
-					if abs(test_cor[0]) > Corr_threshold:
-						#print(start, end, abs(test_cor[0]))
+					# Correct correlation to prioritise close links by putting a penalty
+					alpha = Penalty
+					penalty_cor = abs(test_cor[0]) - alpha * (start_order-end_order)
+					#if abs(test_cor[0]) > Corr_threshold: # Before penalty
+					if penalty_cor > Corr_threshold:
+						#print(C2_start, C1_end, abs(test_cor[0]), penalty_cor)
 						candidate_link_list.append(C2_start)
-						candidate_cor_list.append(abs(test_cor[0]))
+						#candidate_cor_list.append(abs(test_cor[0])) #Before penalty
+						candidate_cor_list.append(abs(penalty_cor))
 						#G_cleaned_rewired.add_edge(C1_end,C2_start,weight=abs(test_cor[0]))
 				else:
 					overlap_count += 1
