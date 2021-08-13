@@ -303,22 +303,22 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 	### End of test for dashed edges
 	
 	
-	plt.ylabel('Decomposition Order',weight='bold')
-	plt.yticks(np.arange(0, max_dim+5, 5),labels=np.arange(0, max_dim+5, 5))
+	plt.ylabel('Decomposition Order',weight='bold',fontsize=18)
+	plt.yticks(np.arange(0, max_dim+5, 5),labels=np.arange(0, max_dim+5, 5), fontsize=14, fontweight='bold')
 	plt.grid(axis='y', linestyle='--')
 	plt.grid(b=None,axis='x')
 	#plt.sci(edges_border)    
 	plt.sci(edges_fig)
 	if edge_select == "Signature_correlation":
-		plt.colorbar().set_label("Edges Average "+signature+" correlation",weight='bold')
+		plt.colorbar().set_label("Edges Average "+signature+" correlation",weight='bold',fontsize=18)
 	elif edge_select == "Pearson_correlation":
-		plt.colorbar().set_label("Edges Pearson correlation",weight='bold')
+		plt.colorbar().set_label("Edges Pearson correlation",weight='bold',fontsize=18)
 	plt.gci().set_cmap(edge_cmap)
 	plt.sci(nodes_fig)
 	if len(genes_test)>0:
-		plt.colorbar().set_label("Nodes found genes proportion",weight='bold')
+		plt.colorbar().set_label("Nodes found genes proportion",weight='bold',fontsize=18)
 	else:
-		plt.colorbar().set_label("Nodes "+signature+" correlation",weight='bold')
+		plt.colorbar().set_label("Nodes "+signature+" correlation",weight='bold',fontsize=18)
 	plt.gci().set_cmap(node_cmap)
 	ax.tick_params(left=True, bottom=False, labelleft=True, labelbottom=False)
 	#ax.collections[1].set_edgecolor("#FF0000")
