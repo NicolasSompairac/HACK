@@ -1,4 +1,4 @@
-# Component Forest
+# Hierarchical Analysis of Component linKs (HACK)
 This repository offers a Multi-level decomposition approach to Stabilised Independent Component Analysis for genomic data
 
 The algorithm works in 3 steps:
@@ -9,7 +9,7 @@ The algorithm works in 3 steps:
 ## Installation
 
 ```
-$ pip install git+https://github.com/NicolasSompairac/Component_Forest#egg=hica
+$ pip install git+https://github.com/NicolasSompairac/HACK#egg=hack
 ```
 
 ## Example
