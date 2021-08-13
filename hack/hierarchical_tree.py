@@ -425,7 +425,7 @@ def Simplify_persistent_components(DG_persist, Comp_sign_dict, job):
 
 	return DG_persist_simple, CC_dict_start
 
-def Recontruct_splits(DG_persist_simple, job, Comp_sign_dict, CC_dict_start, Corr_threshold=0.3, Gap=1.5, K=0):
+def Recontruct_splits(DG_persist_simple, job, Comp_sign_dict, CC_dict_start, Corr_threshold=0.3, Gap=1.5, K=0, Penalty=0.05):
 
 	print("Reconstructing splits...")
 	DG_persist_rewired = DG_persist_simple.copy()
