@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="hica",
+    name="hack",
     version="0.0.3",
     author="Nicolas Sompairac",
     author_email="nicolas.sompairac@curie.fr",
-    description="Component Forest algorithm and ICA applications to genomic data",
+    description="Hierachical Analysis of Component linKs (HACK) algorithm for applications to genomic data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/NicolasSompairac/Component_Forest",
+    url="https://github.com/NicolasSompairac/HACK",
     packages=setuptools.find_packages(),
     install_requires = [
         "scipy == 1.6.3",
