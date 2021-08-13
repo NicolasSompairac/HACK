@@ -183,7 +183,7 @@ def Load_complete_graph(datafolder, biton_folder, job, Minimum_decomposition, Ma
 	# Load the complete graph table
 	Comp_corr_dict = {}
 	Comp_sign_dict = {}
-	with open('Graphs/'+job+"_full_ICA_graph.txt", 'r') as infile:
+	with open('Graphs/'+job+"_full_correlation_graph.txt", 'r') as infile:
 		first_line = infile.readline()
 		for line in infile:
 			tmp = line.split()
