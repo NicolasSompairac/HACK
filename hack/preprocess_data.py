@@ -3,15 +3,12 @@ import scanpy as sc
 import pandas as pd
 import os
 
-def Load_data(foldername, filename, delim="\t", cache_state=True):
-	
-	df = pd.read_csv(foldername+"/"+filename,sep=delim,header=0,index_col=0).transpose()
-	adata = sc.AnnData(df)
-	
-	return adata
+def Preprocess_data_new(foldername, filename, job, delim="\t", To_Log=True, Keep_Variable_Genes=0, Min_cells_prop=0, Center=True, Remove_Duplicates=True):
 
-def Preprocess_data(adata, To_Log=True, Keep_Variable_Genes=0, Min_cells_prop=0, Center=True, Remove_Duplicates=True):
-	
+	adata = sc.read_text(filename=foldername+"/"+filename, delimiter=delim,first_column_names=True).transpose()
+
+	# Preprocessing
+	print("Performing preprocessing")
 	if To_Log:
 		sc.pp.log1p(adata)
 	if Keep_Variable_Genes:
@@ -24,33 +21,31 @@ def Preprocess_data(adata, To_Log=True, Keep_Variable_Genes=0, Min_cells_prop=0,
 		adata = adata[:,ind_genes]
 	if Min_cells_prop:
 		sc.pp.filter_genes(adata, min_cells = int((Min_cells_prop*len(adata.X))), inplace = True)
-	df = adata.copy().to_df()
+	df = adata.to_df()
 	if Remove_Duplicates:
 		df = df.loc[:,~df.columns.duplicated()]
 	if Center:
 		df = df.apply(lambda x: x-x.mean())
 	
-	return df
 
-def Save_data(df, foldername, job):
-	
-	df_T = df.transpose()
-	df_T.to_csv(foldername+"/"+job+"_proc.txt", sep='\t')
-
-	# Extract genes in a separate file
-	with open(foldername+"/"+job+"_genes.txt", 'w') as outfile:
-		outfile.write("Genes\n")
-		for gene in df_T.index.values:
-			outfile.write(str(gene)+"\n")
-	
-	return
-
-def Load_as_numpy(foldername, job):
-	
 	full_path = foldername+"/"+job
-	SC_data = sc.read(full_path+"_proc.txt",
-					cache = True, first_column_names = True, delimiter = "\t").transpose()
-	np.save(file=full_path+"_proc", arr=SC_data.X.transpose())
-	SC_data = np.load(full_path+'_proc.npy')
-	
-	return SC_data
+	# Extract genes in a separate file
+	with open(full_path+"_genes.txt", 'w') as outfile:
+		outfile.write("Genes\n")
+		for gene in df.columns.values:
+			outfile.write(str(gene)+"\n")
+
+	# Extract samples in a separate file
+	with open(full_path+"_samples.txt", 'w') as outfile:
+		outfile.write("Samples\n")
+		for sample in df.index.values:
+			outfile.write(str(sample)+"\n")
+
+	# Save processed data in numpy
+	print("Saving result as numpy file")
+	adata = sc.AnnData(df)
+	np.save(file=full_path+"_proc", arr=adata.X.transpose())
+	print("Done!")
+
+	return adata.X.transpose()
+
