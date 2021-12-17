@@ -3,6 +3,7 @@ import numpy as np
 import networkx as nx
 import scipy.stats
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
 
 def Alternating_left_right_node_coord(graph, comp_start_dict):
 	
@@ -421,4 +422,68 @@ def Compute_average_segments(graph_full, graph_simple, score_type, threshold, da
 	average_segment_pd.to_csv('Graphs/'+job+"_"+score_type+"_thresh"+str(threshold)+"_average_segments.txt", sep="\t", index_label="Genes")
 	print("Job done!")
 	
+	return
+
+def Compute_simplified_normalised_ranks(persist_graph, datafolder, job, threshold=0.0):
+
+	genes_pd = pd.read_csv(datafolder+"/"+job+"_genes.txt", sep='\t')
+
+	print("Generating stable ranks...")
+	Detailed_persistent_comp = nx.weakly_connected_components(persist_graph)
+	Simplified_comp_dict = {}
+	for persistent_comp in Detailed_persistent_comp:
+		# Get simplified persistent component name
+		dim_list = []
+		comp_list = []
+		for comp in persistent_comp:
+			comp_list.append(comp)
+			dim_list.append(int(comp.split("C_")[0]))
+		dim_min = min(dim_list)
+		dim_max = max(dim_list)
+		simp_comp = str(comp_list[dim_list.index(dim_min)])+"_to_"+str(comp_list[dim_list.index(dim_max)])
+		#print(simp_comp)
+
+		All_comp_array = []
+		for comp in persistent_comp:
+			tmp = comp.split("C_")
+			order = tmp[0]
+			N = tmp[1]
+			C = np.load(job+"_deconvolutions/"+job+"_S_matrix_C"+str(order)+".npy")
+			ica_score_comp = C[:,int(N)-1]
+			All_comp_array.append(ica_score_comp)
+			#print(ica_score_comp)
+		All_comp_array = np.array(All_comp_array)
+
+		# Get ranks of components in ascending order: most negative = 1, most positive = max_len
+		All_comp_array_rank = []
+		for comp in range(len(All_comp_array)):
+			tmp = All_comp_array[comp].argsort()
+			ranks = np.empty_like(tmp)
+			ranks[tmp] = np.arange(len(All_comp_array[comp]))
+			ranks = ranks + 1
+			All_comp_array_rank.append(ranks)
+
+		All_comp_array_rank = np.array(All_comp_array_rank)
+
+		All_comp_array_rank_norm = preprocessing.minmax_scale(All_comp_array_rank, feature_range=(-1, 1), axis=1)
+		# Simplify normalised ranks to -1, 0 or +1 based on the set threshold
+		All_comp_array_rank_norm_clean = np.where(All_comp_array_rank_norm >= -threshold, All_comp_array_rank_norm, -1)
+		All_comp_array_rank_norm_clean = np.where(All_comp_array_rank_norm_clean <= threshold, All_comp_array_rank_norm_clean, 1)
+		All_comp_array_rank_norm_clean = np.where((All_comp_array_rank_norm_clean > -threshold) ^ (All_comp_array_rank_norm_clean < threshold), All_comp_array_rank_norm_clean, 0)
+		# Find genes that are not only -1 or +1
+		all_neg = np.all(All_comp_array_rank_norm_clean == -1, axis=0)
+		all_pos = np.all(All_comp_array_rank_norm_clean == 1, axis=0)
+		not_interest = ~all_neg & ~all_pos
+		# Calculate mean normalised rank for only positive or negative and put 0 for rest
+		Mean_norm_rank_cleaned = All_comp_array_rank_norm.mean(0)
+		# Put all non stable values to zero
+		Mean_norm_rank_cleaned[not_interest] = int(0)
+		Simplified_comp_dict[simp_comp] = Mean_norm_rank_cleaned
+
+	print("Saving file...")
+	Simplified_norm_ranks_df = pd.DataFrame.from_dict(Simplified_comp_dict)
+	Simplified_norm_ranks_df.index = genes_pd["Genes"].to_list()
+	Simplified_norm_ranks_df.to_csv('Graphs/'+job+"_thresh_"+str(threshold)+"_average_stability_persistent_components.txt",
+									sep="\t", index_label="Genes", float_format='%.5f')
+	print("Done!")
 	return
