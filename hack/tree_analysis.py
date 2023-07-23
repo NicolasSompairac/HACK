@@ -93,7 +93,7 @@ def Get_SD_genes(component_str, SD_threshold, foldername, job):
 
 def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_select, print_node_labels,
 						print_edge_labels, print_all_nodes, source_node, node_cmap, edge_cmap,
-						genes_test, SD, genes_prop, file_name, foldername, job, added_edges, start_nodes):
+						genes_test, SD, genes_prop, file_name, foldername, job, added_edges, start_nodes,show):
 	
 	# Find nodes and edges if 1 node has high correlation with signature
 	edge_width = 3
@@ -325,7 +325,8 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 	#ax.collections[1].set_edgecolor("#FF0000")
 	#ax.collections[0].set_edgecolor("#FF0000") 
 	plt.savefig(file_name+".svg")
-	plt.show()
+	if show:
+		plt.show()
 	
 	return
 
