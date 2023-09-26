@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hack",
-    version="0.0.5",
+    version="0.0.6",
     author="Nicolas Sompairac",
     author_email="nicolas.sompairac@curie.fr",
     description="Hierachical Analysis of Component linKs (HACK) algorithm for applications to genomic data",
