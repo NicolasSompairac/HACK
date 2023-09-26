@@ -330,34 +330,46 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 	
 	return
 
-def Orient_component(comp_vect, score_type, threshold):
+def Orient_component(comp_vect, score_type, threshold, orient=False):
 	
 	if score_type == "zscore":
 		comp_vect_zscr = scipy.stats.zscore(comp_vect)
-		top_thresh = sum([x for x in comp_vect_zscr if x > threshold])
-		bot_thresh = sum([x for x in comp_vect_zscr if x < -threshold])
-		if abs(top_thresh) > abs(bot_thresh):
-			return comp_vect_zscr
+		if orient:
+			top_thresh = sum([x for x in comp_vect_zscr if x > threshold])
+			bot_thresh = sum([x for x in comp_vect_zscr if x < -threshold])
+			if abs(top_thresh) > abs(bot_thresh):
+				return comp_vect_zscr
+			else:
+				return comp_vect_zscr * -1
 		else:
-			return comp_vect_zscr * -1
+			return comp_vect_zscr
 	elif score_type == "icascore":
 		comp_vect_sort = sorted(comp_vect)
-		top_thresh = sum(comp_vect_sort[-threshold:])
-		bot_thresh = sum(comp_vect_sort[:threshold])
-		if abs(top_thresh) > abs(bot_thresh):
-			return comp_vect
+		if orient:
+			top_thresh = sum(comp_vect_sort[-threshold:])
+			bot_thresh = sum(comp_vect_sort[:threshold])
+			if abs(top_thresh) > abs(bot_thresh):
+				return comp_vect
+			else:
+				return comp_vect * -1
 		else:
-			return comp_vect * -1
+			return comp_vect
 	elif score_type == "rank":
 		comp_vect_zscr = scipy.stats.zscore(comp_vect)
-		top_thresh = sum([x for x in comp_vect_zscr if x > threshold])
-		bot_thresh = sum([x for x in comp_vect_zscr if x < -threshold])
-		if abs(top_thresh) > abs(bot_thresh):
-			comp_vect = comp_vect * -1
-			tmp = comp_vect.argsort()
-			ranks = np.empty_like(tmp)
-			ranks[tmp] = np.arange(len(comp_vect))
-			return ranks + 1
+		if orient:
+			top_thresh = sum([x for x in comp_vect_zscr if x > threshold])
+			bot_thresh = sum([x for x in comp_vect_zscr if x < -threshold])
+			if abs(top_thresh) > abs(bot_thresh):
+				comp_vect = comp_vect * -1
+				tmp = comp_vect.argsort()
+				ranks = np.empty_like(tmp)
+				ranks[tmp] = np.arange(len(comp_vect))
+				return ranks + 1
+			else:
+				tmp = comp_vect.argsort()
+				ranks = np.empty_like(tmp)
+				ranks[tmp] = np.arange(len(comp_vect))
+				return ranks + 1
 		else:
 			tmp = comp_vect.argsort()
 			ranks = np.empty_like(tmp)
@@ -367,7 +379,7 @@ def Orient_component(comp_vect, score_type, threshold):
 		print("Wrong score type input... Input untouched!")
 		return comp_vect
 
-def Compute_average_segments(graph_full, graph_simple, score_type, threshold, datafolder, job):
+def Compute_average_segments(graph_full, graph_simple, score_type, threshold, orient=False, datafolder, job):
 	
 	# Load gene names
 	genes_pd = pd.read_csv(datafolder+"/"+job+"_genes.txt", sep='\t')
@@ -391,7 +403,7 @@ def Compute_average_segments(graph_full, graph_simple, score_type, threshold, da
 		sum_vect = np.zeros(len(seg_all_vect[0]))
 		for vect in seg_all_vect:
 			# Orient the component based on score type and threshold
-			orient_average_vect = Orient_component(vect, score_type, threshold)
+			orient_average_vect = Orient_component(vect, score_type, threshold, orient)
 			# Add the oriented score into the list
 			sum_vect += orient_average_vect
 		# Average the list of scores
