@@ -379,7 +379,7 @@ def Orient_component(comp_vect, score_type, threshold, orient=False):
 		print("Wrong score type input... Input untouched!")
 		return comp_vect
 
-def Compute_average_segments(graph_full, graph_simple, score_type, threshold, orient=False, datafolder, job):
+def Compute_average_segments(graph_full, graph_simple, score_type, threshold, datafolder, job, orient=False):
 	
 	# Load gene names
 	genes_pd = pd.read_csv(datafolder+"/"+job+"_genes.txt", sep='\t')
