@@ -278,7 +278,7 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 								   edge_color=edge_dashed_colors, style='dashed',alpha=alpha_val,
 								   edge_cmap=plt.cm.get_cmap(edge_cmap), edge_vmin=0, edge_vmax=1)
 		if print_edge_labels:
-			nx.draw_networkx_edge_labels(graph, pos, edgelist=edges_to_draw,
+			nx.draw_networkx_edge_labels(graph, pos,
 										edge_labels=edge_labels_sign,label_pos=0.5,
 										font_weight='bold')
 		
@@ -298,7 +298,7 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 								   edge_color=edge_dashed_colors_cor, style='dashed',alpha=alpha_val,
 								   edge_cmap=plt.cm.get_cmap(edge_cmap), edge_vmin=0, edge_vmax=1)
 		if print_edge_labels:
-			nx.draw_networkx_edge_labels(graph, pos, edgelist=edges_to_draw,
+			nx.draw_networkx_edge_labels(graph, pos,
 										edge_labels=edge_labels_pear,label_pos=0.5,
 										font_weight='bold')
 	### End of test for dashed edges
@@ -307,7 +307,7 @@ def Create_plot_colors(graph, max_dim, layout, threshold_sign, signature, edge_s
 	plt.ylabel('Decomposition Order',weight='bold',fontsize=18)
 	plt.yticks(np.arange(0, max_dim+5, 5),labels=np.arange(0, max_dim+5, 5), fontsize=14, fontweight='bold')
 	plt.grid(axis='y', linestyle='--')
-	plt.grid(b=None,axis='x')
+	plt.grid(visible=None,axis='x')
 	#plt.sci(edges_border)    
 	plt.sci(edges_fig)
 	if edge_select == "Signature_correlation":
